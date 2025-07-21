@@ -4,9 +4,9 @@ from retriever import build_faiss_index, retrieve_top_k
 from groq_llm import query_llm_with_history
 
 
-chunk_texts, chunk_sources = load_pdfs_from_dir("papers/")
-
-embeddings = embed_chunks(chunk_texts)
+all_chunks = load_pdfs_from_dir("papers/")
+texts = [chunk["content"] for chunk in all_chunks]
+embeddings = embed_chunks(texts)
 index = build_faiss_index(embeddings)
 
 print("Loaded papers. Ask question. Type 'exit' to quit\n")
@@ -18,12 +18,12 @@ while True:
 
     query_vec = embed_query(question)
     print(f"Query shape: {query_vec.shape}")  # should be (1, 384)
-    top_chunks = retrieve_top_k(query_vec, chunk_texts, index, k=3)
+
+    top_chunks = retrieve_top_k(query_vec, all_chunks, index, k=3)
 
     print("\n Retrieved from: ")
     for chunk in top_chunks:
-        i = chunk_texts.index(chunk)
-        print(f"- {chunk_sources[i]}")
+        print(f"- {chunk['source']} (page {chunk['page']})")
     
-    answer = query_llm_with_history(question, top_chunks)
+    answer = query_llm_with_history(question, [chunk['content'] for chunk in top_chunks])
     print("\n Assistant:\n" + str(answer) + "\n") # type: ignore
