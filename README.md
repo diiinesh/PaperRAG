@@ -19,8 +19,8 @@ PaperRAG is a lightweight, modular Retrieval-Augmented Generation (RAG) system d
 
 ## Getting Started
 
-### 1. Clone the Repository
+### 1. Clone the Repository then call
 
 ```bash
-git clone https://github.com/your-username/paper-rag.git
 cd paper-rag
+python main.py
